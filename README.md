@@ -7,7 +7,7 @@ Agent skills for the [CloudRaker Paperwork API](https://docs.cloudraker.com) and
 ```bash
 brew install cloudraker/paperwork/paperwork
 # or
-curl -fsSL https://install.paperwork.sh | sh
+curl -fsSL https://paperwork.sh | sh
 
 export PAPERWORK_TOKEN="<your API key>"
 ```

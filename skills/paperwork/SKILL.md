@@ -15,7 +15,7 @@ allowed-tools:
 ```bash
 brew install cloudraker/paperwork/paperwork
 # or
-curl -fsSL https://install.paperwork.sh | sh
+curl -fsSL https://paperwork.sh | sh
 
 export PAPERWORK_TOKEN="<api key>"   # a .env in the cwd is auto-loaded too
 ```

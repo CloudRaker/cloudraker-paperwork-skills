@@ -1,0 +1,16 @@
+{
+  "name": "cloudraker",
+  "interface": {
+    "displayName": "CloudRaker"
+  },
+  "plugins": [
+    {
+      "name": "paperwork",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

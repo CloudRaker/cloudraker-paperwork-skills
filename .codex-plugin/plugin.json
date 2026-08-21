@@ -1,9 +1,9 @@
 {
   "name": "paperwork",
-  "displayName": "CloudRaker Paperwork",
-  "description": "Skills for the CloudRaker Paperwork CLI: parse, extract, redact, fill, sign, compose, redline, pipelines, spaces, agents, and webhooks.",
   "version": "0.1.0",
-  "skills": ["./skills/"],
+  "description": "Skills for the CloudRaker Paperwork CLI: parse, extract, redact, fill, sign, compose, redline, pipelines, spaces, agents, and webhooks.",
+  "skills": "./skills",
+  "mcpServers": "./.mcp.json",
   "author": {
     "name": "CloudRaker",
     "url": "https://www.cloudraker.com"
@@ -11,5 +11,12 @@
   "homepage": "https://docs.cloudraker.com",
   "repository": "https://github.com/CloudRaker/cloudraker-paperwork-skills",
   "license": "MIT",
-  "keywords": ["cloudraker", "paperwork", "documents", "extraction", "e-signature", "redaction", "pdf"]
+  "keywords": ["cloudraker", "paperwork", "documents", "extraction", "e-signature", "redaction", "pdf"],
+  "interface": {
+    "displayName": "CloudRaker Paperwork",
+    "shortDescription": "Document infrastructure: parse, extract, redact, fill, sign, compose.",
+    "developerName": "CloudRaker",
+    "category": "Productivity",
+    "websiteURL": "https://www.cloudraker.com"
+  }
 }

@@ -1,0 +1,14 @@
+{
+  "name": "cloudraker-paperwork-skills",
+  "owner": {
+    "name": "CloudRaker",
+    "email": "support@cloudraker.com"
+  },
+  "plugins": [
+    {
+      "name": "paperwork",
+      "source": "./",
+      "description": "Skills for the CloudRaker Paperwork CLI: parse, extract, redact, fill, sign, compose, redline, pipelines, spaces, agents, and webhooks."
+    }
+  ]
+}

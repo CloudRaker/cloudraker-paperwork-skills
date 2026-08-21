@@ -126,10 +126,7 @@ curl -s -X DELETE "$B/redline/$SID/comments/c38" -H "$A"
 
 Comments ride along on flush — the exported `.docx` carries every thread, resolved state and all.
 
-Two caveats:
-
-- Parsed markdown (`tools convert-file-to-markdown`, `urls.markdown`) **silently drops comments** — read them through the session endpoints above, never through parse output.
-- Against an API that does not yet serve these endpoints (`not_found` on `GET …/comments`), fall back to downloading the file's `urls.content` bytes and reading `word/comments.xml` from the zip locally.
+One caveat: parsed markdown (`tools convert-file-to-markdown`, `urls.markdown`) **silently drops comments** — read them through the session endpoints above, never through parse output.
 
 (`files get-file --id` accepts the file **name** as well as the uuid.)
 

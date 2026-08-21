@@ -22,6 +22,8 @@ export PAPERWORK_TOKEN="<api key>"   # a .env in the cwd is auto-loaded too
 
 Verify: `paperwork --version`, then `paperwork files list-files --limit 1` (any 200 means auth works).
 
+If that check fails with a 401 (or `PAPERWORK_TOKEN` is unset), stop and ask the user for an API key — they can create one at **https://app.cloudraker.com/admin/api-keys** — then export it as `PAPERWORK_TOKEN` (or put it in the project's `.env`) and re-run the check. Never guess or reuse a token from elsewhere.
+
 ## Wait vs poll
 
 Every run-creating command accepts `--wait <seconds>` (0–120). The API defaults to holding the request open for 60s.

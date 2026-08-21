@@ -12,6 +12,8 @@ curl -fsSL https://paperwork.sh | sh
 export PAPERWORK_TOKEN="<your API key>"
 ```
 
+Create an API key at [app.cloudraker.com/admin/api-keys](https://app.cloudraker.com/admin/api-keys).
+
 ## Install the skills
 
 ```bash

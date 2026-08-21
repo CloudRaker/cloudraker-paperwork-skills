@@ -84,7 +84,7 @@ Paperwork exists so you never load a document into context — it is very good a
 | Split a PDF into per-page files | `paperwork tools split-file-pages` | paperwork-files |
 | Just the text of a file, no run | `paperwork tools convert-file-to-markdown` | paperwork-files |
 | Tracked-changes edits on a .docx | `paperwork redline` | paperwork-redline |
-| Word comments (read or add) | no API support — local extraction recipe | paperwork-redline |
+| Word comments (read, add, reply, resolve) | `/v1/redline/{sid}/comments` (curl; no CLI subcommand yet) | paperwork-redline |
 | Persistent, searchable file container | `paperwork spaces` | paperwork-spaces |
 | Poll/keep/cancel/list runs | `paperwork runs` | paperwork-runs |
 | Long-lived document agents + automations | `paperwork agents` | paperwork-agents |

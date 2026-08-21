@@ -1,7 +1,7 @@
 ---
 name: paperwork-redline
 description: |
-  Edit a .docx with tracked changes via the Paperwork CLI — session-based redlining: replace/delete/insert text, accept or reject suggestions, export the redlined document. Use for contract markup, negotiated edits, or any Word tracked-changes work. Also covers what to do about Word comments (the API counts them but cannot read or write them).
+  Edit a .docx with tracked changes via the Paperwork CLI — session-based redlining: replace/delete/insert text, accept or reject suggestions, read/add/reply/resolve Word comment threads, export the redlined document. Use for contract markup, negotiated edits, or any Word tracked-changes or comment work.
 allowed-tools:
   - Bash(paperwork *)
 ---
@@ -75,10 +75,12 @@ Same body shapes for the other ops:
 
 ```json
 {"op": "deleteText", "anchorText": "…exact text…"}
-{"op": "fill", "replacements": [{"anchorText": "…", "replacement": "…"}, …]}
+{"op": "fill", "fields": [{"anchorText": "…", "replacement": "…"}, …]}
 {"op": "insertMarkdown", "markdown": "**New clause.** …", "position": "end"}
 {"op": "insertMarkdown", "markdown": "…", "anchorText": "…", "position": "after"}
 ```
+
+Note the `fill` op takes `fields`, not `replacements`. Optional on any op: `occurrence` (1-based match picker), `all` (every match), `tracked`, `author`.
 
 Every other redline command (open, content, suggestions, accept, reject, bulk apply, revisions, flush) works through the CLI as documented.
 
@@ -98,38 +100,45 @@ paperwork redline apply-redline-suggestions --session-id $SID --revision 2 --jso
 
 `list-redline-revisions` shows the full history; `get-redline-session` shows expiry, revision, and counts.
 
-## Comments — the API counts them but cannot read, write, or resolve them
+## Comments — full thread surface, curl until the CLI catches up
 
-The session summary reports a `comments` count, and that is the **entire** comment surface of the API today:
-
-- No endpoint lists comment text, no edit op adds a comment, and accept/reject only touches tracked changes.
-- Parsed markdown (`tools convert-file-to-markdown`, `urls.markdown`) **silently drops comments** — verified: a doc with 38 substantive reviewer comments produced markdown with zero of them.
-
-If the task needs the comments (contract review threads usually carry the reasoning), do NOT thrash on the API — download the bytes and read `word/comments.xml` locally:
+The API reads and writes Word comment threads (added 2026-08-21). Comment ids (`cN`) are **stable across edits** — unlike `tc` suggestion ids, they never renumber. CLI ≤0.0.1 predates these endpoints, so call them directly (verified end to end):
 
 ```bash
-URL=$(paperwork files get-file --id msa.docx --format json --query 'urls.content' | tr -d '"')
-curl -s "$URL" -o /tmp/doc.docx
-python3 - <<'EOF'
-import zipfile
-from xml.etree import ElementTree as ET
-W = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
-z = zipfile.ZipFile('/tmp/doc.docx')
-for c in ET.fromstring(z.read('word/comments.xml')).findall(W+'comment'):
-    text = ' '.join(t.text or '' for t in c.iter(W+'t'))
-    print(f"[{c.get(W+'id')}] {c.get(W+'author')} ({c.get(W+'date')}): {text}")
-EOF
+B=https://api.cloudraker.com/v1; A="authorization: Bearer $PAPERWORK_TOKEN"; C="content-type: application/json"
+
+# List — author, date, body, blockId, resolved; replies carry parentId.
+# ?openOnly=true returns only unresolved threads.
+curl -s "$B/redline/$SID/comments" -H "$A"
+
+# Add, anchored to text (occurrence picks a match when ambiguous;
+# author labels Word's review pane, default "CloudRaker")
+curl -s -X POST "$B/redline/$SID/comments" -H "$A" -H "$C" \
+  -d '{"anchorText":"thirty (30) days","body":"Sixty days is market standard.","author":"Counsel"}'
+# → {"revision":1,"result":{"commentId":"c38"},"summary":{…,"comments":39,…}}
+
+# Reply / resolve (whole thread, replies included) / reopen / delete
+curl -s -X POST "$B/redline/$SID/comments/c38/reply" -H "$A" -H "$C" -d '{"body":"Agreed, updated."}'
+curl -s -X POST "$B/redline/$SID/comments/c38/resolve" -H "$A" -H "$C" -d '{}'
+curl -s -X POST "$B/redline/$SID/comments/c38/resolve" -H "$A" -H "$C" -d '{"resolved":false}'
+curl -s -X DELETE "$B/redline/$SID/comments/c38" -H "$A"
 ```
 
-(`files get-file --id` accepts the file **name** as well as the uuid.)
+Comments ride along on flush — the exported `.docx` carries every thread, resolved state and all.
 
-If asked to ADD a comment: say plainly that the Paperwork API cannot, and offer the alternatives — an `insertMarkdown` tracked insertion (visible in the review pane like any suggestion), or local docx tooling outside this API.
+Two caveats:
+
+- Parsed markdown (`tools convert-file-to-markdown`, `urls.markdown`) **silently drops comments** — read them through the session endpoints above, never through parse output.
+- Against an API that does not yet serve these endpoints (`not_found` on `GET …/comments`), fall back to downloading the file's `urls.content` bytes and reading `word/comments.xml` from the zip locally.
+
+(`files get-file --id` accepts the file **name** as well as the uuid.)
 
 ## Tips
 
 - File names resolve in the org workspace only — a file in a space must be flushed by id (space sessions open via `paperwork spaces space-redline-file`).
 - Flush is repeatable — checkpoint long editing sessions.
 - Flushing does not close or drain the session; keep editing and flush again.
+- `PAPERWORK_BASE_URL` (CLI ≤0.0.1): generated commands expect the base to INCLUDE `/v1`; the `files upload` composite appends its own `/v1` and 404s with that base — no single value satisfies both. When overriding the base, upload with `files create-file` + a curl PUT to the returned `uploadUrl` instead of `files upload`.
 
 ## See also
 

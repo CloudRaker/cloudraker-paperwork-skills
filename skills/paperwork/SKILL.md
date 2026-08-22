@@ -17,12 +17,16 @@ brew install cloudraker/paperwork/paperwork
 # or
 curl -fsSL https://paperwork.sh | sh
 
+paperwork auth login                 # sign in with your CloudRaker account
+# or, for CI / non-interactive use:
 export PAPERWORK_TOKEN="<api key>"   # a .env in the cwd is auto-loaded too
 ```
 
+`paperwork auth login` opens the browser for a one-time device-code sign-in (add `--no-browser` on a headless machine — it prints a code and URL to open anywhere). The token lands in a local file store and refreshes itself; `paperwork auth status` and `paperwork auth logout` manage it. `PAPERWORK_TOKEN` always wins over the stored login when both are present.
+
 Verify: `paperwork --version`, then `paperwork files list-files --limit 1` (any 200 means auth works).
 
-If that check fails with a 401 (or `PAPERWORK_TOKEN` is unset), stop and ask the user for an API key — they can create one at **https://app.cloudraker.com/admin/api-keys** — then export it as `PAPERWORK_TOKEN` (or put it in the project's `.env`) and re-run the check. Never guess or reuse a token from elsewhere.
+If that check fails with a 401, run `paperwork auth login` (needs a human to approve in the browser — ask the user to run it if you cannot). For unattended use ask the user for an API key instead — they can create one at **https://app.cloudraker.com/admin/api-keys** — then export it as `PAPERWORK_TOKEN` (or put it in the project's `.env`) and re-run the check. Never guess or reuse a token from elsewhere.
 
 ## Wait vs poll
 

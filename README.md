@@ -9,10 +9,10 @@ brew install cloudraker/paperwork/paperwork
 # or
 curl -fsSL https://paperwork.sh | sh
 
-export PAPERWORK_TOKEN="<your API key>"
+paperwork auth login   # sign in with your CloudRaker account
 ```
 
-Create an API key at [app.cloudraker.com/admin/api-keys](https://app.cloudraker.com/admin/api-keys).
+`paperwork auth login` runs a browser device-code sign-in (`--no-browser` for headless) and keeps the token refreshed in a local file store. For CI or agents without a browser, use an API key instead: create one at [app.cloudraker.com/admin/api-keys](https://app.cloudraker.com/admin/api-keys) and `export PAPERWORK_TOKEN="<your API key>"` (it overrides the stored login).
 
 ## Install the skills
 

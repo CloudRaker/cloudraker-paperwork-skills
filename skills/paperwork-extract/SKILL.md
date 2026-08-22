@@ -13,6 +13,11 @@ allowed-tools:
 ## Quick start
 
 ```bash
+# --file takes a local path (uploaded first), a file id or name, or a URL.
+# --schema takes inline JSON or a path to a .json file.
+paperwork extract --file ./fw9.pdf --schema ./fields.schema.json --params '{"citations": true}'
+
+# Or spell the whole body out:
 paperwork extract extract --json '{
   "file": {"url": "https://www.irs.gov/pub/irs-pdf/fw9.pdf"},
   "schema": {
@@ -40,7 +45,7 @@ paperwork extract extract --json '{
 
 - `output.value` — single document; `output.documents[]` — one entry per file.
 - `citations: true` → `output.citations` maps each field to `fileId` + page + bbox (or timecode for audio), or `notFound: true`. Always request citations when correctness matters — a cited value is checkable, an uncited one is a guess.
-- `--output inline` adds each source's parsed `markdown`/`json` (≤ 1 MiB combined, else URLs only).
+- `--output-param inline` adds each source's parsed `markdown`/`json` (≤ 1 MiB combined, else URLs only).
 
 ## Batch: same shape over up to 100 files
 

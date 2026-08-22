@@ -13,13 +13,15 @@ Files registered here are **persistent** (no TTL) and parse-once: reuse the id a
 ## Registering a file
 
 ```bash
+# A local file — registers it, PUTs the bytes, prints the file record
+paperwork files upload ./recording.mp3
+paperwork files upload ./contract.pdf --space-id <spaceId> --wait   # --wait polls to ready
+
 # By URL — fetched for you, mimeType sniffed
 paperwork files create-file --json '{"url": "https://www.irs.gov/pub/irs-pdf/fw9.pdf", "name": "fw9.pdf"}'
-
-# By upload — returns uploadUrl (15 min); PUT bytes with Content-Type EXACTLY equal to mimeType
-paperwork files create-file --json '{"name": "recording.mp3", "mimeType": "audio/mpeg"}'
-curl -X PUT -H "Content-Type: audio/mpeg" --data-binary @recording.mp3 "<uploadUrl>"
 ```
+
+`files upload` takes `--name`, `--mime-type`, `--processing`, `--space-id`, `--wait`. Use it instead of `create-file` + a hand-rolled `PUT`: `create-file` with `{name, mimeType}` only reserves the record and hands back a 15-minute `uploadUrl` you must PUT to yourself, with a `Content-Type` exactly equal to the `mimeType` you sent.
 
 `processing`: `auto` (default, self-upgrades to OCR on scans) | `ocr` | `simple` | `transcribe` | `transcribe_diarize` (default for audio/video).
 
@@ -29,7 +31,14 @@ curl -X PUT -H "Content-Type: audio/mpeg" --data-binary @recording.mp3 "<uploadU
 paperwork files get-file --id <id>   # status: uploading → processing → ready | failed
 ```
 
-Once `ready`, `urls` carries signed links (~1 h): `content`, and `markdown`/`json` when parsed. `--id` accepts the file **name** too (`409 ambiguous_file_name` → use the id). `list-files --limit N` (1–200, no cursor). `delete-file` removes the file and everything parsed from it; finished runs keep their results.
+Once `ready`, `urls` carries signed links (~1 h): `content`, and `markdown`/`json` when parsed. Those links die about an hour after they are handed out, so fetch through the CLI rather than storing them:
+
+```bash
+paperwork files download --id <id>                       # bytes → ./<file name>
+paperwork files download --id <id> --as markdown -o doc.md
+```
+
+`--id` accepts the file **name** too (`409 ambiguous_file_name` → use the id). `list-files --limit N` (1–200, no cursor — 200 files is the ceiling per call). `delete-file` removes the file and everything parsed from it; finished runs keep their results.
 
 ## File tools (`paperwork tools`) — deterministic transforms
 

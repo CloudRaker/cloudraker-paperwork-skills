@@ -51,7 +51,7 @@ echo "$R" | jq .
 
 Terminal statuses: `processed`, `failed`, `cancelled`, `expired`. `needs_input` means a human task or signer is pending — surface it to the user, don't spin on it. A `202` is a graceful degrade, never an error. Replaying an `--idempotency-key` returns the original run (`idempotent-replay: true` header).
 
-Do the same for files: after `files create-file`, poll `files get-file` every 10s until `status: "ready"`.
+Do the same for files: after `files create-file`, poll `files get-file` every 10s until `status: "ready"` — or let `paperwork files upload <path> --wait` do the polling.
 
 ## Keep documents out of your context
 
@@ -59,13 +59,13 @@ Paperwork exists so you never load a document into context — it is very good a
 
 - Need specific values? `extract` with a schema and `citations: true` — never parse-then-read-the-whole-thing.
 - Need to find something in a corpus? `spaces space-search` — never read files one by one.
-- Genuinely need the text? Parse or `tools convert-file-to-markdown`, write it to a local file (`--output` / shell redirect), then `grep`/`head` bounded slices — read only the lines that answer the question.
+- Genuinely need the text? Parse or `tools convert-file-to-markdown`, write it to a local file (`paperwork files download --id <id> --as markdown -o doc.md`, or a shell redirect from `--format raw`), then `grep`/`head` bounded slices — read only the lines that answer the question.
 - Need to *see* a page? `tools render-file-page` and view the PNG — only when visual verification is truly required (e.g. checking a redaction).
 - Chain commands by **file id and run id**, never by content. Download bytes only when the user wants the file itself.
 
 ## Order of operations (opinionated)
 
-1. **Register files once** (`paperwork files create-file`) and reuse the file id everywhere. Files are persistent and parse-once — passing the same `{"id": "…"}` to extract, redact, fill, and pipeline never re-parses. Only use inline `{"url": "…"}` for true one-shots.
+1. **Register files once** (`paperwork files upload <path>`, or `files create-file` for a URL) and reuse the file id everywhere. Files are persistent and parse-once — passing the same `{"id": "…"}` to extract, redact, fill, and pipeline never re-parses. Only use inline `{"url": "…"}` for true one-shots.
 2. **Parse when you need the text, extract when you need data.** Don't parse then regex — `extract` with a JSON Schema plus `citations: true` gives you grounded values directly.
 3. **Same shape over many files? Save a config first** (`paperwork configs create-extract-config`), then `extract extract-batch` — one request, up to 100 runs.
 4. **Several capabilities over the same files? One `pipeline` call**, not sequential runs. Files parse once; steps run in parallel.
@@ -81,7 +81,9 @@ Paperwork exists so you never load a document into context — it is very good a
 | Send for e-signature | `paperwork sign sign` | paperwork-sign |
 | Generate PDFs from typst templates | `paperwork compose create` | paperwork-compose |
 | Multiple capabilities, one file set | `paperwork pipeline pipeline` | paperwork-pipeline |
-| Upload / manage the file corpus | `paperwork files` | paperwork-files |
+| Upload a local file | `paperwork files upload <path>` | paperwork-files |
+| Download a file's bytes / markdown | `paperwork files download --id <id>` | paperwork-files |
+| Manage the file corpus | `paperwork files` | paperwork-files |
 | Merge PDFs or concatenate audio recordings | `paperwork tools stitch-files` | paperwork-files |
 | Word/Excel/PowerPoint/image → PDF | `paperwork tools convert-file-to-pdf` | paperwork-files |
 | Render a PDF page as an image (visual check, thumbnail) | `paperwork tools render-file-page` | paperwork-files |
@@ -94,9 +96,24 @@ Paperwork exists so you never load a document into context — it is very good a
 | Long-lived document agents + automations | `paperwork agents` | paperwork-agents |
 | Event delivery | `paperwork webhooks` | paperwork-webhooks |
 
-## Global flags
+## Flags worth knowing
 
-`--dry-run` (print the HTTP request), `--json <JSON|->`, `--format json|table|yaml|csv`, `--output <path>` (binary responses), `--page-all`, `--base-url`, `-q`. Run `paperwork <resource> --help` for methods and flags.
+`--file <path|id|url>` — every run-creating command takes it. A local path is uploaded first, an id or file name is used as is, an http(s) URL is passed through. `--files a.pdf,b.pdf` for the list form. A path that does not exist is refused locally, before any request.
+
+`--query <JMESPath>` — the one that matters most. It projects the response before printing, so `--query output.value` returns the extracted fields and nothing else. Use it instead of piping a whole run through `jq`.
+
+`--json <JSON|->` (full body, `-` reads stdin), `--params <JSON>` (merged over the individual flags), `--dry-run` (print the HTTP request, send nothing), `--format json|table|yaml|csv|raw|jsonl`, `--page-all`, `--base-url`, `-q`.
+
+A body field whose name collides with a built-in flag is registered with a `-param` suffix — `--output-param`, `--schema-param`, `--format-param`. The plain spelling is accepted and rewritten for you, but `--help` shows the real one. `--schema <path.json>` and `--schema-param @path.json` both read the file.
+
+Run `paperwork <resource> --help` for methods and flags, or `paperwork <resource> <op> --schema` for the machine-readable version.
+
+## Output and exit codes
+
+- Default format: `table` on a terminal, `json` when piped. `--format` wins; `PAPERWORK_OUTPUT` sets the default for a session.
+- `--format json|yaml|raw` is exactly what the server sent. `table` summarises arrays as `N item(s)` so the resource itself stays readable — reach for `--query <field>` or `--format json` to see them.
+- Exit codes: `0` success, `1` API error, `2` auth, `3` bad arguments, `4` schema/endpoint resolution, `5` internal. `paperwork errors` prints the table.
+- Errors print `{"error": {"code", "message", "reason"}}` on stdout; `reason` carries the API's own slug (`not_found`, `invalid_request`, `rate_limited`) — branch on that, not on the message.
 
 ## Conventions
 

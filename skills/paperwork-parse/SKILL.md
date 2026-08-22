@@ -13,20 +13,24 @@ allowed-tools:
 ## Quick start
 
 ```bash
-# Digital-text PDF: waiting is fine — one call, result inline
-paperwork parse parse --output inline \
-  --json '{"file": {"url": "https://www.irs.gov/pub/irs-pdf/fw9.pdf"}}'
+# A local file: uploaded first, then parsed — one call
+paperwork parse --file ./contract.pdf
+
+# Digital-text PDF by URL: waiting is fine — result inline
+paperwork parse --file https://www.irs.gov/pub/irs-pdf/fw9.pdf --output-param inline
 
 # Scan (OCR) or audio: fire with --wait 0, then poll
-paperwork parse parse --wait 0 --json '{"file": {"id": "<fileId>", "processing": "transcribe_diarize"}}'
+paperwork parse --file <fileId> --wait 0 --params '{"file": {"processing": "transcribe_diarize"}}'
 ```
 
-**Wait vs poll:** a digital-text PDF finishes inside the default 60s hold — just wait. Scans that need OCR and audio/video take minutes — fire with `--wait 0` and poll `paperwork runs get-run --id par_… --output inline --wait 0` every 10s until `status` leaves `processing` (loop in the `paperwork` skill).
+`--file` takes any of the three: a local path, a file id or name, or an http(s) URL. `--output-param` is what `--help` calls the `output` body field (`--output` is accepted too, and rewritten for you).
+
+**Wait vs poll:** a digital-text PDF finishes inside the default 60s hold — just wait. Scans that need OCR and audio/video take minutes — fire with `--wait 0` and poll `paperwork runs get-run --id par_… --output-param inline --wait 0` every 10s until `status` leaves `processing` (loop in the `paperwork` skill).
 
 ## Output
 
 - `output.markdownUrl` / `output.jsonUrl` — signed, ~1 hour.
-- `--output inline` also returns `markdown` and `json` in the body when their combined size ≤ 1 MiB; larger falls back to URLs only.
+- `--output-param inline` also returns `markdown` and `json` in the body when their combined size ≤ 1 MiB; larger falls back to URLs only.
 
 **Keep the result out of your context.** Do not dump the markdown into the conversation. Write it to a local file (`curl -s "$markdownUrl" -o doc.md`, or redirect the inline body), then `grep`/`head` bounded slices for what you need. If the real goal is specific values, don't parse at all — `extract` with a schema returns just those fields.
 

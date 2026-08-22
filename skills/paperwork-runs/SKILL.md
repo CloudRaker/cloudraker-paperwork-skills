@@ -22,15 +22,27 @@ while :; do
 done
 ```
 
-Statuses: `processing` → `processed` | `failed` | `cancelled` | `expired` | `needs_input`. `needs_input` means a human (fill review task or signer) — surface `tasks[]`/`envelopeUrl` to the user rather than polling on human timescales. `--output inline` returns parse/extract source inline (≤ 1 MiB). Pipeline runs carry `steps[]` keyed by the step ids from create.
+Statuses: `processing` → `processed` | `failed` | `cancelled` | `expired` | `needs_input`. `needs_input` means a human (fill review task or signer) — surface `tasks[]`/`envelopeUrl` to the user rather than polling on human timescales. `--output-param inline` returns parse/extract source inline (≤ 1 MiB). Pipeline runs carry `steps[]` keyed by the step ids from create.
+
+**Read just the result**, not the whole run body:
+
+```bash
+paperwork runs get-run --id "$ID" --query output.value        # extracted fields
+paperwork runs get-run --id "$ID" --query output.citations    # where each came from
+paperwork runs get-run --id "$ID" --query status              # one word
+```
+
+`--query` is JMESPath and applies to every command. Prefer it over piping the whole run through `jq` — it keeps the run body out of your context.
 
 ## Outputs
 
 Signed URLs are inline on the run body under `output`. The stable alias for one produced file:
 
 ```bash
-paperwork runs get-run-output --id <runId> --name redacted.pdf --output ./redacted.pdf
+paperwork runs get-run-output --id <runId> --name redacted.pdf --format raw > ./redacted.pdf
 ```
+
+(`--format raw` writes the server's bytes unchanged; there is no `--output` flag on this command.)
 
 `409 output_not_ready` is retryable — bytes still settling, ask again in a few seconds.
 

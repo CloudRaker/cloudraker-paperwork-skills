@@ -77,7 +77,7 @@ Paperwork exists so you never load a document into context — it is very good a
 | Document/audio → markdown + JSON | `paperwork parse parse` | paperwork-parse |
 | Structured data + citations | `paperwork extract extract` | paperwork-extract |
 | Remove PII (destructive) | `paperwork redact redact` | paperwork-redact |
-| Fill a form PDF from source docs | `paperwork fill fill` | paperwork-fill |
+| Fill a form PDF (JSON values or source docs) | `paperwork fill fill` | paperwork-fill |
 | Send for e-signature | `paperwork sign sign` | paperwork-sign |
 | Generate PDFs from typst templates | `paperwork compose create` | paperwork-compose |
 | Multiple capabilities, one file set | `paperwork pipeline pipeline` | paperwork-pipeline |

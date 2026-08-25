@@ -1,7 +1,7 @@
 {
   "name": "paperwork",
   "displayName": "CloudRaker Paperwork",
-  "description": "Skills for the CloudRaker Paperwork CLI: parse, extract, redact, fill, sign, compose, redline, pipelines, spaces, agents, and webhooks.",
+  "description": "Skills for the CloudRaker Paperwork CLI: parse, extract, classify, split, redact, fill, sign, compose, redline, pipelines, spaces, agents, and webhooks.",
   "version": "0.4.0",
   "author": {
     "name": "CloudRaker",
@@ -15,6 +15,7 @@
     "./skills/paperwork",
     "./skills/paperwork-parse",
     "./skills/paperwork-extract",
+    "./skills/paperwork-classify",
     "./skills/paperwork-fill",
     "./skills/paperwork-redact",
     "./skills/paperwork-sign",

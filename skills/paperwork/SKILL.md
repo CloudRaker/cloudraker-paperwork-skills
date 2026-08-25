@@ -76,6 +76,8 @@ Paperwork exists so you never load a document into context — it is very good a
 | --- | --- | --- |
 | Document/audio → markdown + JSON | `paperwork parse parse` | paperwork-parse |
 | Structured data + citations | `paperwork extract extract` | paperwork-extract |
+| Label a document, or find where each document starts | `paperwork classify` | paperwork-classify |
+| Cut a multi-document PDF into one file per document | `paperwork split` | paperwork-classify |
 | Remove PII (destructive) | `paperwork redact redact` | paperwork-redact |
 | Fill a form PDF (JSON values or source docs) | `paperwork fill fill` | paperwork-fill |
 | Send for e-signature | `paperwork sign sign` | paperwork-sign |

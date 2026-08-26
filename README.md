@@ -35,7 +35,7 @@ Or as a Claude Code plugin:
 | [`paperwork-parse`](./skills/paperwork-parse) | Documents/audio → markdown + JSON; engine selection (auto/ocr/simple/transcribe/diarize) |
 | [`paperwork-extract`](./skills/paperwork-extract) | JSON-Schema extraction with per-field citations; saved configs; 100-file batches |
 | [`paperwork-classify`](./skills/paperwork-classify) | Document/page classification against a class list; page mode feeds deterministic PDF split |
-| [`paperwork-fill`](./skills/paperwork-fill) | Form-PDF filling from source docs; template library; human review tasks |
+| [`paperwork-fill`](./skills/paperwork-fill) | Form-PDF filling from source docs or a `values` object; template library; fill configs |
 | [`paperwork-redact`](./skills/paperwork-redact) | Destructive PII removal from documents and audio |
 | [`paperwork-sign`](./skills/paperwork-sign) | E-signature envelopes: signers, resend, void, audit trail |
 | [`paperwork-compose`](./skills/paperwork-compose) | PDF generation from typst templates: render, batch, bundle authoring, lint, preview |

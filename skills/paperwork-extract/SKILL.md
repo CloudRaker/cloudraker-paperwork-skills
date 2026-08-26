@@ -66,7 +66,6 @@ There is no batch object — poll each run, or list them together: `paperwork ru
 ## Tips
 
 - Register files first and extract by id — re-runs with a tweaked schema then skip parsing entirely.
-- `status: "needs_input"` means a human task is parked on the run — surface `tasks[].url`, don't poll-spin.
 - Per-file result inside a batch is independent: one `{file, error}` entry doesn't fail the rest.
 
 ## See also

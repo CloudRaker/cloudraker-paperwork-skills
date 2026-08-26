@@ -22,7 +22,7 @@ while :; do
 done
 ```
 
-Statuses: `processing` → `processed` | `failed` | `cancelled` | `expired` | `needs_input`. `needs_input` means a human (fill review task or signer) — surface `tasks[]`/`envelopeUrl` to the user rather than polling on human timescales. `--output-param inline` returns parse/extract source inline (≤ 1 MiB). Pipeline runs carry `steps[]` keyed by the step ids from create.
+Statuses: `processing` → `processed` | `failed` | `cancelled` | `expired` | `needs_input`. `needs_input` on a capability run means an open signature envelope — surface `envelopeUrl` to the user rather than polling on human timescales. Capability runs carry no `tasks[]`; only agent runs (`/v1/agent-runs`) do. `--output-param inline` returns parse/extract source inline (≤ 1 MiB). Pipeline runs carry `steps[]` keyed by the step ids from create.
 
 **Read just the result**, not the whole run body:
 

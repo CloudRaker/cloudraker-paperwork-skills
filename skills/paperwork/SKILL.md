@@ -49,7 +49,7 @@ done
 echo "$R" | jq .
 ```
 
-Terminal statuses: `processed`, `failed`, `cancelled`, `expired`. `needs_input` means a human task or signer is pending — surface it to the user, don't spin on it. A `202` is a graceful degrade, never an error. Replaying an `--idempotency-key` returns the original run (`idempotent-replay: true` header).
+Terminal statuses: `processed`, `failed`, `cancelled`, `expired`. `needs_input` means a signer is pending (or, on an agent run, a human step or approval) — surface it to the user, don't spin on it. A `202` is a graceful degrade, never an error. Replaying an `--idempotency-key` returns the original run (`idempotent-replay: true` header).
 
 Do the same for files: after `files create-file`, poll `files get-file` every 10s until `status: "ready"` — or let `paperwork files upload <path> --wait` do the polling.
 
@@ -105,6 +105,8 @@ Paperwork exists so you never load a document into context — it is very good a
 `--query <JMESPath>` — the one that matters most. It projects the response before printing, so `--query output.value` returns the extracted fields and nothing else. Use it instead of piping a whole run through `jq`.
 
 `--json <JSON|->` (full body, `-` reads stdin), `--params <JSON>` (merged over the individual flags), `--dry-run` (print the HTTP request, send nothing), `--format json|table|yaml|csv|raw|jsonl`, `--page-all`, `--base-url`, `-q`.
+
+`--base-url` / `PAPERWORK_BASE_URL` REPLACE the whole base, which defaults to `https://api.cloudraker.com/v1` — an override must include the `/v1` suffix.
 
 A body field whose name collides with a built-in flag is registered with a `-param` suffix — `--output-param`, `--schema-param`, `--format-param`. The plain spelling is accepted and rewritten for you, but `--help` shows the real one. `--schema <path.json>` and `--schema-param @path.json` both read the file.
 

@@ -135,7 +135,7 @@ One caveat: parsed markdown (`tools convert-file-to-markdown`, `urls.markdown`) 
 - File names resolve in the org workspace only — a file in a space must be flushed by id (space sessions open via `paperwork spaces space-redline-file`).
 - Flush is repeatable — checkpoint long editing sessions.
 - Flushing does not close or drain the session; keep editing and flush again.
-- `PAPERWORK_BASE_URL` (CLI ≤0.0.1): generated commands expect the base to INCLUDE `/v1`; the `files upload` composite appends its own `/v1` and 404s with that base — no single value satisfies both. When overriding the base, upload with `files create-file` + a curl PUT to the returned `uploadUrl` instead of `files upload`.
+- `PAPERWORK_BASE_URL` must INCLUDE the `/v1` suffix — see [paperwork](../paperwork/SKILL.md#flags-worth-knowing).
 
 ## See also
 

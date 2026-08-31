@@ -5,7 +5,7 @@ Agent skills for the [CloudRaker Paperwork API](https://docs.cloudraker.com) and
 ## Install the CLI
 
 ```bash
-brew install cloudraker/paperwork/paperwork
+brew install cloudraker/tap/paperwork
 # or
 curl -fsSL https://paperwork.sh | sh
 

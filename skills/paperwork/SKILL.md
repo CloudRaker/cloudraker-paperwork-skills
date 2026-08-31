@@ -13,7 +13,7 @@ allowed-tools:
 ## Install & auth
 
 ```bash
-brew install cloudraker/paperwork/paperwork
+brew install cloudraker/tap/paperwork
 # or
 curl -fsSL https://paperwork.sh | sh
 

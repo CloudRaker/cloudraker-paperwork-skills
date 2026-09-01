@@ -37,7 +37,7 @@ Or as a Claude Code plugin:
 | [`paperwork-classify`](./skills/paperwork-classify) | Document/page classification against a class list; page mode feeds deterministic PDF split |
 | [`paperwork-fill`](./skills/paperwork-fill) | Form-PDF filling from source docs or a `values` object; template library; fill configs |
 | [`paperwork-redact`](./skills/paperwork-redact) | Destructive PII removal from documents and audio |
-| [`paperwork-sign`](./skills/paperwork-sign) | E-signature envelopes: signers, resend, void, audit trail |
+| [`paperwork-sign`](./skills/paperwork-sign) | E-signature envelopes: signers, resend, void, audit trail, CC recipients |
 | [`paperwork-compose`](./skills/paperwork-compose) | PDF generation from typst templates: render, batch, bundle authoring, lint, preview |
 | [`paperwork-pipeline`](./skills/paperwork-pipeline) | Several capabilities over one file set, parsed once |
 | [`paperwork-files`](./skills/paperwork-files) | File corpus + tools: upload, convert, split, stitch, render |

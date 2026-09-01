@@ -16,10 +16,13 @@ allowed-tools:
 paperwork sign sign --wait 0 --json '{
   "file": {"id": "<fileId>"},
   "signers": [{"name": "Ada Lovelace", "email": "ada@example.com"}],
+  "cc": [{"name": "Grace Hopper", "email": "grace@example.com"}],
   "message": "Please countersign by Friday.",
   "placement": "page"
 }'
 ```
+
+`cc` parties never sign — no OTP, no tag, no signing link. They receive the sealed PDF when the envelope completes.
 
 **Always asynchronous** — you get `202` with `status: "needs_input"` the moment the envelope exists, and it stays there until the last signer completes. **Do not poll a sign run every 10s** — humans sign on human timescales. Fire it, report the envelope to the user, and check back on request (or wire a webhook for `run.completed`). Sign runs are exempt from the run TTL: envelopes wait for their signers.
 
@@ -32,7 +35,7 @@ paperwork sign sign --wait 0 --json '{
 
 | Task | Command |
 | --- | --- |
-| Who still has to sign? | `paperwork runs get-run-envelope --id <runId>` — per-signer `status`, `emailVerifiedAt`, `signedAt` |
+| Who still has to sign? | `paperwork runs get-run-envelope --id <runId>` — per-signer `status`, `emailVerifiedAt`, `signedAt`; cc parties listed separately, labeled CC |
 | Lost/expired invitation | `paperwork runs resend-run-signer --id <runId> --signer-id <id>` — issues a **new** link, kills the old one (not a reminder nudge) |
 | Cancel everything | `paperwork runs void-run-envelope --id <runId>` — optional `{"reason": "…"}` lands in the audit trail; `409` once completed |
 | Audit trail (JSON, available mid-flight) | `paperwork runs get-run-audit-trail --id <runId>` |
